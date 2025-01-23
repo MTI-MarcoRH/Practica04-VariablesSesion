@@ -10,6 +10,9 @@ const PORT = 3500;
 //ipAdrian: 10.10.62.17
 //ipMatias:  10.10.62.14
 
+//ipIdai: 10.10.62.17
+//ipAilton: 10.10.62.13
+
 
 //Sesiones almacenadas en Memoria(RAM)
 const sessions = {};
@@ -76,7 +79,7 @@ app.post('/login' , (request , response)=>{
         macAddress,
         ip : getServerNetworkInfo(),
         createAt: now ,
-        lastAccesed: now
+        lastAccess: now
     };
 
 
@@ -119,19 +122,14 @@ app.post('/logout', (req, res) => {
 
 // Update endpoint
 app.put('/update', (req, res) => {
-  const { username } = req.body;
+  const { sessionId } = req.body;
 
-  if (!req.session.user) {
-    return res.status(401).send({ message: 'You need to log in first.' });
+  if (!sessionId || !sessions[sessionId]) {
+    return res.status(404).json({ message: "No hay sesiones activas" }); 
   }
 
-  if (!username) {
-    return res.status(400).send({ message: 'Username is required.' });
-  }
-
-  req.session.user.username = username;
-  req.session.user.lastActivity = Date.now();
-  res.send({ message: 'User updated successfully.', session: req.session.user });
+  sessions[sessionId].lastAccess = new Date();
+  res.send({ message: 'La sesión se actualizó correctamente.', session: req.session.user });
 });
 
 
